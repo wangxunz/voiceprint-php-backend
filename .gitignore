@@ -1,0 +1,32 @@
+# 依赖
+vendor/
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# 上传文件
+uploads/*
+!uploads/.gitkeep
+results/*
+!results/.gitkeep
+
+# 日志
+logs/*
+!logs/.gitkeep
+
+# 环境
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# 模型文件（过大）
+models/
+*.ckpt
+*.pth
