@@ -1,5 +1,5 @@
 <?php
-// public/index.php - 入口路由
+// public/index.php - ??????????????
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
@@ -10,75 +10,68 @@ require_once __DIR__ . '/../controllers/HealthController.php';
 require_once __DIR__ . '/../controllers/VoiceprintController.php';
 require_once __DIR__ . '/../controllers/ConversionController.php';
 
-// 解析请求
-$method = $_SERVER['REQUEST_METHOD'];
-$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri    = rtrim($uri, '/');
+\ = \['REQUEST_METHOD'];
+\    = parse_url(\['REQUEST_URI'], PHP_URL_PATH);
+\    = rtrim(\, '/');
 
-// 移除 /v1 前缀
-$basePath = '/v1';
-if (strpos($uri, $basePath) === 0) {
-    $route = substr($uri, strlen($basePath)) ?: '/';
-} else {
-    $route = $uri;
+// ????????????????/v1?/VoicePrint ??
+\ = \;
+\ = ['/v1', '/VoicePrint'];
+foreach (\ as \) {
+    if (strpos(\, \) === 0) {
+        \ = substr(\, strlen(\)) ?: '/';
+        break;
+    }
 }
 
-// CORS 头
+// CORS ?
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Content-Type: application/json; charset=utf-8');
 
-if ($method === 'OPTIONS') {
+if (\ === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// 路由分发
+// ????
 try {
     switch (true) {
-        // 健康检查
-        case $route === '/health' && $method === 'GET':
+        case \ === '/health' && \ === 'GET':
             (new HealthController())->check();
             break;
 
-        // 声纹注册
-        case $route === '/voiceprint/enroll' && $method === 'POST':
+        case \ === '/voiceprint/enroll' && \ === 'POST':
             (new VoiceprintController())->enroll();
             break;
 
-        // 提交变声任务
-        case $route === '/conversion/submit' && $method === 'POST':
+        case \ === '/conversion/submit' && \ === 'POST':
             (new ConversionController())->submit();
             break;
 
-        // 查询任务状态
-        case $route === '/conversion/status' && $method === 'GET':
+        case \ === '/conversion/status' && \ === 'GET':
             (new ConversionController())->status();
             break;
 
-        // 获取结果
-        case $route === '/conversion/result' && $method === 'GET':
+        case \ === '/conversion/result' && \ === 'GET':
             (new ConversionController())->result();
             break;
 
-        // 删除任务
-        case $route === '/conversion/delete' && $method === 'POST':
+        case \ === '/conversion/delete' && \ === 'POST':
             (new ConversionController())->delete();
             break;
 
-        // 历史记录
-        case $route === '/conversion/history' && $method === 'GET':
+        case \ === '/conversion/history' && \ === 'GET':
             (new ConversionController())->history();
             break;
 
-        // 404
         default:
-            Response::error('接口不存在', 404);
+            Response::error('?????: ' . \, 404);
     }
-} catch (\Throwable $e) {
-    $msg = (require __DIR__ . '/../config.php')['debug']
-        ? $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()
-        : '服务器内部错误';
-    Response::error($msg, 500);
+} catch (\Throwable \) {
+    \ = (require __DIR__ . '/../config.php')['debug']
+        ? \->getMessage() . ' in ' . \->getFile() . ':' . \->getLine()
+        : '???????';
+    Response::error(\, 500);
 }
