@@ -1,5 +1,5 @@
 <?php
-// public/index.php - 入口路由 (多前缀适配)
+// public/index.php - 入口路由 (PATH_INFO 模式，不需要 .htaccess)
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 
@@ -11,16 +11,28 @@ require_once __DIR__ . '/../controllers/VoiceprintController.php';
 require_once __DIR__ . '/../controllers/ConversionController.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri    = rtrim($uri, '/');
 
-// +++ 改动在这里：原来只认 /v1，现在循环匹配多个前缀
-$route = $uri;
-$prefixes = ['/v1', '/VoicePrint'];
-foreach ($prefixes as $prefix) {
-    if (strpos($uri, $prefix) === 0) {
-        $route = substr($uri, strlen($prefix)) ?: '/';
-        break;
+// PATH_INFO 路由: /VoicePrint/index.php/health -> route = /health
+// 也兼容 Rewrite 模式: /VoicePrint/health       -> route = /health
+$pathInfo = $_SERVER['PATH_INFO'] ?? '';
+$reqUri   = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+if ($pathInfo !== '' && $pathInfo !== '/') {
+    // PATH_INFO 模式: /index.php/health
+    $route = rtrim($pathInfo, '/');
+} else {
+    // Rewrite 模式或 query string 降级
+    $route = rtrim($reqUri, '/');
+    $prefixes = ['/v1', '/VoicePrint'];
+    foreach ($prefixes as $prefix) {
+        if (strpos($route, $prefix) === 0) {
+            $route = substr($route, strlen($prefix)) ?: '/';
+            break;
+        }
+    }
+    // 移掉 /index.php 前缀
+    if (strpos($route, '/index.php') === 0) {
+        $route = substr($route, strlen('/index.php')) ?: '/';
     }
 }
 
