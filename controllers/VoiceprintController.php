@@ -62,9 +62,19 @@ class VoiceprintController
         $fileArg = escapeshellarg($filePath);
         $logFile = escapeshellarg($this->config['paths']['logs'] . '/enroll.log');
 
+        $db = $this->config['db'];
+        $envVars = sprintf(
+            'DB_HOST=%s DB_PORT=%d DB_NAME=%s DB_USER=%s DB_PASS=%s PYTHONIOENCODING=utf-8',
+            escapeshellarg($db['host']),
+            $db['port'],
+            escapeshellarg($db['database']),
+            escapeshellarg($db['username']),
+            escapeshellarg($db['password'])
+        );
+
         $cmd = sprintf(
-            'PYTHONIOENCODING=utf-8 %s %s --voiceprint-id %s --audio-file %s >> %s 2>&1 &',
-            $pythonCmd, $scriptCmd, $idArg, $fileArg, $logFile
+            '%s %s %s --voiceprint-id %s --audio-file %s >> %s 2>&1 &',
+            $envVars, $pythonCmd, $scriptCmd, $idArg, $fileArg, $logFile
         );
 
         if (PHP_OS_FAMILY === 'Windows') {
